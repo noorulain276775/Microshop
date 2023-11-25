@@ -1,1 +1,1 @@
-# This Project is using python, docker, RabbitMQ, MySQL, MongoDB and Kubernetes 
+# This Project is using Python, Docker, RabbitMQ, MySQL, MongoDB and Kubernetes 
