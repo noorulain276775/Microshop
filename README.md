@@ -43,14 +43,17 @@ MicroShop demonstrates **independent services**, **event-driven communication**,
 
 ---
 
-## Key Features
+## Features Overview
 
-1. **User Service** – Register, login, and manage users  
-2. **Product Service** – List, add, update products  
-3. **Order Service** – Create orders and publish events to Kafka  
-4. **Notification Service** – Consume events from Kafka and notify users  
-5. **Frontend** – React UI to interact with all services  
-6. **Kafka Messaging** – Enables asynchronous communication between services  
+- **User Service:** Register, login, manage users  
+  - Produces `USER_CREATED` events to Kafka  
+- **Product Service:** List, add, update products  
+- **Order Service:** Create orders, produces `ORDER_CREATED` events to Kafka  
+- **Notification Service:** Consumes Kafka events, sends notifications  
+  - Welcome emails for new users  
+  - Order confirmation emails  
+- **Frontend:** React UI interacts with all services  
+- **Kafka Messaging:** Enables asynchronous, loosely coupled communication  
 
 ---
 
@@ -67,7 +70,7 @@ microshop/
 
 ---
 
-## 🔹 Tech Stack
+## Tech Stack
 
 | Layer     | Technology                        |
 |-----------|-----------------------------------|
@@ -79,7 +82,7 @@ microshop/
 
 ---
 
-## 🔹 How to Run Locally
+## How to Run Locally
 
 1. **Start Kafka using Docker**  
    ```bash
@@ -101,9 +104,7 @@ microshop/
    ```
 
 4. **Test the Flow**  
-   - Create users  
+   - Register users  
    - Add products  
    - Place orders  
-   - See notifications via Kafka
-
----
+   - Receive notifications via Kafka
