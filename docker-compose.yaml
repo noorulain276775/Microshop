@@ -1,5 +1,7 @@
 version: '3.8'
+
 services:
+  # ZooKeeper
   zookeeper:
     image: confluentinc/cp-zookeeper:latest
     container_name: microshop-zookeeper
@@ -9,6 +11,7 @@ services:
     ports:
       - "2181:2181"
 
+  # Kafka broker
   kafka:
     image: confluentinc/cp-kafka:6.2.1
     container_name: microshop-kafka
@@ -19,7 +22,7 @@ services:
       KAFKA_BROKER_ID: 1
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
 
-      # Two listeners: internal and host
+      # Corrected listeners for internal + host access
       KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092,PLAINTEXT_HOST://0.0.0.0:29092
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,PLAINTEXT_HOST://localhost:29092
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
@@ -29,6 +32,7 @@ services:
     depends_on:
       - zookeeper
 
+  # Kafka UI
   kafka-ui:
     image: provectuslabs/kafka-ui:latest
     container_name: kafka-ui
@@ -40,3 +44,31 @@ services:
       KAFKA_CLUSTERS_0_NAME: local
       KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:9092
       KAFKA_CLUSTERS_0_ZOOKEEPER: zookeeper:2181
+
+  # MongoDB
+  mongo:
+    image: mongo:6
+    container_name: microshop-mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+
+  # User Service
+  user-service:
+    build: ./user-service
+    container_name: user-service
+    ports:
+      - "4000:4000"
+    depends_on:
+      - kafka
+      - mongo
+    environment:
+      MONGO_URI: mongodb://mongo:27017/user-service
+      KAFKA_BROKERS: kafka:9092
+      ENABLE_KAFKA: 'true'
+    env_file:
+      - ./user-service/.env
+
+volumes:
+  mongo-data:
