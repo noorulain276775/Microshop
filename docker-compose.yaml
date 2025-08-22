@@ -70,5 +70,20 @@ services:
     env_file:
       - ./user-service/.env
 
+  product-service:
+    build: ./product-service
+    container_name: product-service
+    ports:
+      - "8000:8000"
+    depends_on:
+      - kafka
+      - zookeeper
+      - mongo
+    environment:
+      MONGO_URI: mongodb://mongo:27017/product-service
+      KAFKA_BROKERS: kafka:9092
+    env_file:
+      - ./product-service/.env
+
 volumes:
   mongo-data:
