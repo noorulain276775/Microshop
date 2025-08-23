@@ -1,110 +1,123 @@
 # MicroShop
 
-MicroShop is a demo **microservices-based e-commerce platform** built with:
+MicroShop is a microservices-based e-commerce platform demonstrating event-driven architecture with Apache Kafka.
 
-- **Backend:** Node.js + TypeScript + Express  
-- **Frontend:** React + TypeScript  
-- **Messaging:** Apache Kafka for event-driven communication  
-- **Database:** MongoDB / PostgreSQL (optional for each service)  
-- **Dev Tools:** Docker, ts-node, Nodemon  
+## Architecture Overview
 
-MicroShop demonstrates **independent services**, **event-driven communication**, and **modern full-stack architecture**.
+The platform consists of four main microservices:
 
----
+| Service | Technology Stack | Port | Database | Description |
+|---------|------------------|------|----------|-------------|
+| User Service | Node.js + TypeScript + Express | 4000 | MongoDB | User registration, authentication, and management with Kafka producer |
+| Product Service | Python + FastAPI | 8000 | MongoDB | Product CRUD operations with Kafka producer |
+| Order Service | Node.js + TypeScript + Express | - | - | Order creation and management with Kafka producer |
+| Notification Service | Node.js + TypeScript + Express | - | - | Consumes Kafka events and sends notifications |
 
-## Architecture Diagram
+All services communicate asynchronously through Apache Kafka for event-driven messaging.
 
-```
-   +----------------+        
-   | React Frontend |        
-   +----------------+        
-           |                       
-           v                       
-   +----------------+        
-   | API Gateway    |        
-   +----------------+        
-      |        |                 
-      v        v                 
-+----------------+ +----------------+
-| User Service  | | Product Service |
-+----------------+ +----------------+
-      |                |
-      v                v
-+----------------+     |
-| Order Service  |     |
-+----------------+     |
-      |                |
-      v                v
-+----------------+ +----------------+
-| Notification   | | Kafka Broker   |
-| Service        | +----------------+
-+----------------+
-```
+## Services Description
 
----
+### User Service
+- Built with Node.js, TypeScript, and Express
+- MongoDB database with Mongoose ODM
+- User registration, authentication, and management
+- Kafka producer for user events
+- Runs on port 4000
 
-## Features Overview
+### Product Service  
+- Built with Python and FastAPI
+- MongoDB database with Motor async driver
+- Product CRUD operations
+- Kafka producer for product events
+- Runs on port 8000
 
-- **User Service:** Register, login, manage users  
-  - Produces `USER_CREATED` events to Kafka  
-- **Product Service:** List, add, update products  
-- **Order Service:** Create orders, produces `ORDER_CREATED` events to Kafka  
-- **Notification Service:** Consumes Kafka events, sends notifications  
-  - Welcome emails for new users  
-  - Order confirmation emails  
-- **Frontend:** React UI interacts with all services  
-- **Kafka Messaging:** Enables asynchronous, loosely coupled communication  
+### Order Service
+- Built with Node.js, TypeScript, and Express
+- Handles order creation and management
+- Kafka producer for order events
 
----
+### Notification Service
+- Built with Node.js, TypeScript, and Express
+- Consumes Kafka events from other services
+- Sends notifications based on events
+
+## Infrastructure
+
+- **Message Broker**: Apache Kafka with Zookeeper
+- **Database**: MongoDB
+- **Containerization**: Docker and Docker Compose
+- **Kafka UI**: Web interface for monitoring Kafka topics and messages
 
 ## Project Structure
 
 ```
-microshop/
-├── user-service/
-├── product-service/
-├── order-service/
-├── notification-service/
-└── frontend/
+Microshop/
+├── user-service/          # Node.js + TypeScript service
+├── product-service/       # Python + FastAPI service  
+├── order-service/         # Node.js + TypeScript service
+├── notification-service/  # Node.js + TypeScript service
+├── docker-compose.yaml    # Infrastructure setup
+└── README.md
 ```
 
----
+## Prerequisites
 
-## Tech Stack
+- Docker and Docker Compose
+- Node.js (for user, order, and notification services)
+- Python 3.8+ (for product service)
 
-| Layer     | Technology                        |
-|-----------|-----------------------------------|
-| Backend   | Node.js + TypeScript + Express    |
-| Frontend  | React + TypeScript + Axios        |
-| Messaging | Apache Kafka                      |
-| Database  | MongoDB / PostgreSQL              |
-| Dev Tools | Docker, Nodemon, ts-node          |
+## Getting Started
 
----
-
-## How to Run Locally
-
-1. **Start Kafka using Docker**  
+1. **Start Infrastructure Services**
    ```bash
    docker-compose up -d
    ```
+   This starts:
+   - Zookeeper (port 2181)
+   - Kafka (ports 9092, 29092)
+   - Kafka UI (port 8080)
+   - MongoDB (port 27017)
 
-2. **Start Backend Services**  
-   Open separate terminals for each service and run:
+2. **Start User Service**
    ```bash
-   cd user-service && npm install && npm run dev
-   cd product-service && npm install && npm run dev
-   cd order-service && npm install && npm run dev
-   cd notification-service && npm install && npm run dev
+   cd user-service
+   npm install
+   npm run dev
+   ```
+   Service will be available at http://localhost:4000
+
+3. **Start Product Service**
+   ```bash
+   cd product-service
+   pip install -r requirements.txt
+   uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+   ```
+   Service will be available at http://localhost:8000
+
+4. **Start Order Service**
+   ```bash
+   cd order-service
+   npm install
+   npm run dev
    ```
 
-3. **Start Frontend**  
+5. **Start Notification Service**
    ```bash
-   cd frontend && npm install && npm start
+   cd notification-service
+   npm install
+   npm run dev
    ```
 
-4. **Test the Flow**  
-   - Register users  
-   - Add products  
-   - Place orders  
-   - Receive notifications via Kafka
+## Access Points
+
+- **Kafka UI**: http://localhost:8080
+- **User Service**: http://localhost:4000
+- **Product Service**: http://localhost:8000
+- **MongoDB**: localhost:27017
+
+## Development Notes
+
+- Each service has its own database collection in MongoDB
+- Kafka topics are auto-created when services start
+- Services use environment variables for configuration
+- Docker Compose handles service dependencies and networking
