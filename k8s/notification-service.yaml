@@ -1,0 +1,39 @@
+# notification-service.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: notification-service
+  namespace: microshop
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: notification-service
+  template:
+    metadata:
+      labels:
+        app: notification-service
+    spec:
+      containers:
+        - name: notification-service
+          image: us-central1-docker.pkg.dev/microshop-470313/microshop-backend/notification-service:latest
+          ports:
+            - containerPort: 5000
+          envFrom:
+            - configMapRef:
+                name: microshop-config
+            - secretRef:
+                name: microshop-secret
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: notification-service
+  namespace: microshop
+spec:
+  selector:
+    app: notification-service
+  ports:
+    - port: 5000
+      targetPort: 5000
+  type: ClusterIP

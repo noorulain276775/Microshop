@@ -64,7 +64,7 @@ services:
       - kafka
       - mongo
     environment:
-      MONGO_URI: mongodb://mongo:27017/user-service
+      MONGO_URI: ${MONGO_URI_USER}
       KAFKA_BROKERS: kafka:9092
       ENABLE_KAFKA: 'true'
       JWT_SECRET: ${JWT_SECRET}
@@ -81,7 +81,7 @@ services:
       - zookeeper
       - mongo
     environment:
-      MONGO_URI: mongodb://mongo:27017/product-service
+      MONGO_URI: ${MONGO_URI_PRODUCT}
       KAFKA_BROKERS: kafka:9092
     env_file:
       - ./product-service/.env

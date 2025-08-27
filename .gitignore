@@ -11,6 +11,7 @@
 *.crt
 secrets/
 credentials/
+k8s/config-secret.yaml
 
 # Logs
 *.log

@@ -1,0 +1,39 @@
+# product-service.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: product-service
+  namespace: microshop
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: product-service
+  template:
+    metadata:
+      labels:
+        app: product-service
+    spec:
+      containers:
+        - name: product-service
+          image: us-central1-docker.pkg.dev/microshop-470313/microshop-backend/product-service:latest
+          ports:
+            - containerPort: 8000
+          envFrom:
+            - configMapRef:
+                name: microshop-config
+            - secretRef:
+                name: microshop-secret
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: product-service
+  namespace: microshop
+spec:
+  selector:
+    app: product-service
+  ports:
+    - port: 8000
+      targetPort: 8000
+  type: ClusterIP
