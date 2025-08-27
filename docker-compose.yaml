@@ -67,6 +67,7 @@ services:
       MONGO_URI: mongodb://mongo:27017/user-service
       KAFKA_BROKERS: kafka:9092
       ENABLE_KAFKA: 'true'
+      JWT_SECRET: ${JWT_SECRET}
     env_file:
       - ./user-service/.env
 
@@ -85,5 +86,65 @@ services:
     env_file:
       - ./product-service/.env
 
+  # Notification Service (Flask)
+  notification-service:
+    build: ./notification-service
+    container_name: notification-service
+    ports:
+      - "5000:5000"
+    depends_on:
+      - kafka
+      - mongo
+    environment:
+      KAFKA_BROKERS: kafka:9092
+      KAFKA_TOPIC: user-registered
+    env_file:
+      - ./notification-service/.env
+
+  # MySQL Database
+  mysql:
+    image: mysql:8.0
+    container_name: microshop-mysql
+    ports:
+      - "3307:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_ROOT_HOST: '%'
+    volumes:
+      - mysql-data:/var/lib/mysql
+    command: --default-authentication-plugin=mysql_native_password
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
+
+  # Order Service
+  order-service:
+    build: ./order-service
+    container_name: order-service
+    ports:
+      - "3000:3000"
+    depends_on:
+      mysql:
+        condition: service_healthy
+      kafka:
+        condition: service_started
+    environment:
+      KAFKA_BROKERS: kafka:9092
+      KAFKA_TOPIC: order-created
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_USER: ${MYSQL_USER}
+      DB_PASSWORD: ${MYSQL_PASSWORD}
+      DB_NAME: ${MYSQL_DATABASE}
+      JWT_SECRET: ${JWT_SECRET}
+      PORT: 3000
+      NODE_ENV: development
+      SERVICE_NAME: order-service
+
 volumes:
   mongo-data:
+  mysql-data:

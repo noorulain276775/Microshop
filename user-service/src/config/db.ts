@@ -1,8 +1,12 @@
 import mongoose from "mongoose";
 
-const MONGO_URI = process.env.MONGO_URI || "mongodb://localhost:27017/user-service";
+const MONGO_URI = process.env.MONGO_URI;
 
 export const connectDB = async () => {
+  if (!MONGO_URI) {
+    throw new Error('MONGO_URI environment variable is required');
+  }
+  
   try {
     await mongoose.connect(MONGO_URI);
     console.log("MongoDB connected:", MONGO_URI);

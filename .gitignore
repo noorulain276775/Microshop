@@ -1,0 +1,46 @@
+# Environment files
+.env
+.env.local
+.env.production
+.env.staging
+.env.development
+
+# Secrets and credentials
+*.pem
+*.key
+*.crt
+secrets/
+credentials/
+
+# Logs
+*.log
+logs/
+
+# Dependencies
+node_modules/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+venv/
+.venv/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Build outputs
+dist/
+build/
+*.tsbuildinfo
+
+# Temporary files
+*.tmp
+*.temp

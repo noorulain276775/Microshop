@@ -17,9 +17,9 @@ export const connectProducer = async () => {
 
     producer = kafka.producer();
     await producer.connect();
-    console.log("✅ Kafka producer connected");
+    console.log("Kafka producer connected");
   } catch (err) {
-    console.error("❌ Kafka connection failed:", err);
+    console.error("Kafka connection failed:", err);
     process.exit(1); // crash app if Kafka is required
   }
 };
